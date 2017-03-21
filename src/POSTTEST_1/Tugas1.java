@@ -1,4 +1,4 @@
-package Tugas1;
+package POSTTEST_1;
 import static java.awt.Event.ENTER;
 import javax.swing.JOptionPane;
 

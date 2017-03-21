@@ -1,4 +1,4 @@
-package Tugas3;
+package POSTTEST_3;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -356,9 +356,10 @@ public class SIA extends javax.swing.JFrame {
                                             .addComponent(jLabel12)
                                             .addGap(113, 113, 113)))
                                     .addGroup(jPanel10Layout.createSequentialGroup()
-                                        .addComponent(jLabel15)
-                                        .addGap(63, 63, 63))
-                                    .addComponent(jLabel13))
+                                        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel15)
+                                            .addComponent(jLabel13))
+                                        .addGap(63, 63, 63)))
                                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(TFAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(jPanel10Layout.createSequentialGroup()
@@ -517,8 +518,6 @@ public class SIA extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setText("UNIVERSITAS MULAWARMAN");
-
-        jLabel4.setIcon(new javax.swing.ImageIcon("E:\\SERING BUKA\\thA.jpg")); // NOI18N
 
         javax.swing.GroupLayout PATASLayout = new javax.swing.GroupLayout(PATAS);
         PATAS.setLayout(PATASLayout);
