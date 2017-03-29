@@ -733,7 +733,7 @@ public class SIA extends javax.swing.JFrame {
         else if (RBWNI.isSelected())
         warga = RBWNI.getText();
 
-        FormKTPOutput output = new FormKTPOutput (Nama,Alamat,Kecamatan,Kelurahan,Kecamatan,Kota,Pekerjaan,RT,RW,Tempat,Tanggal,Agama,Gol,Status,jk);
+        FormKTPOutput output = new FormKTPOutput (Nama,Alamat,Kecamatan,Kelurahan,Kota,Pekerjaan,RT,RW,Tempat,Tanggal,Agama,Gol,Status,jk);
         output.setVisible(true);
     }//GEN-LAST:event_JBRegisterActionPerformed
 
