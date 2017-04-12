@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package POSTTEST_6;
+package POSTTEST_7;
 
 import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel; //buat model di table
-import POSTTEST_6.koneksi;
+import POSTTEST_7.koneksi;
 public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang diturunkan dari class javax.swing.jframe
     private DefaultTableModel model; 
     private Connection con = koneksi.getConnection(); //untuk mengambil dari class koneksi
@@ -23,6 +23,7 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
     }
     private void InitTable(){
         model = new DefaultTableModel();
+        model.addColumn("ID BUKU"); //menambahkan kolom pada id buku
         model.addColumn("JUDUL"); //menambahkan kolom pada judul
         model.addColumn("PENULIS"); ////menambahkan kolom pada penulis
         model.addColumn("HARGA"); //menambahkan kolom pada harga
@@ -35,10 +36,11 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
             stt = con.createStatement(); //menampilakn data dengan mengkoneksikan ke database
             rss = stt.executeQuery(sql); //menampung data dengan mengeksekusi seiap query
             while(rss.next()){
-                Object[] o = new Object[3];
-                o[0] = rss.getString("judul"); //menampung data pada judul
-                o[1] = rss.getString("penulis"); //menampung data pada penulis
-                o[2] = rss.getString("harga"); //menampung data pada harga
+                Object[] o = new Object[4];
+                o[0] = rss.getString("id");
+                o[1] = rss.getString("judul"); //menampung data pada judul
+                o[2] = rss.getString("penulis"); //menampung data pada penulis
+                o[3] = rss.getString("harga"); //menampung data pada harga
                 model.addRow(o); //menambah baris
             }
         }catch(SQLException e){
@@ -46,10 +48,10 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         }
     }
     
-    private boolean validasi(String Judul){ //
+    private boolean validasi(String Judul, String Penulis){ //
         try{ //mengeksekusi program yang berada di dalam try
             stt=con.createStatement();
-            String sql = "Select *from buku where judul = '"+Judul+"'"; //menampilkan semua data pada tabel buku dimana pencarian berdasarkan judul
+            String sql = "Select *from buku where judul = '"+Judul+"' and penulis='"+Penulis+"';"; //menampilkan semua data pada tabel buku dimana pencarian berdasarkan judul
             rss=stt.executeQuery(sql);
             if (rss.next())
                 return true;
@@ -61,6 +63,30 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
                 return false;
             }
     }
+    
+    private boolean ubahdata (String id, String judul, String penulis, String harga){
+        try{
+            String sql = "Update buku set judul='"+judul+"', penulis='"+penulis+"', harga="+harga+" where id="+id+";"; //data yang bisa diubah judul, penulis, dan harga
+            stt=con.createStatement();
+            stt.executeUpdate(sql);
+            return true;
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    
+    private boolean hapusdata (String id){
+        try{
+            String sql = "delete from buku where id="+id+";";
+            stt=con.createStatement();
+            stt.executeUpdate(sql);
+            return true;
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
      
     private void TambahData(String judul, String penulis, String harga){ //method tambah data
         try{ //mengeksekusi program yang berada di dalam try
@@ -69,6 +95,24 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
             stt.executeUpdate(sql);
             model.addRow(new Object[]{judul,penulis,harga});
         }catch(SQLException e){ //catch untuk menentukan jenis exception yang ingin ditangani
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    private void PencarianData(String by, String cari){
+        try{
+            String sql = "Select *from buku where "+by+" like'%"+cari+"%';"; //menampilkan seluruh data dari tabel buku
+            stt = con.createStatement(); //menampilakn data dengan mengkoneksikan ke database
+            rss = stt.executeQuery(sql); //menampung data dengan mengeksekusi seiap query
+            while(rss.next()){
+                Object[] o = new Object[4];
+                o[0] = rss.getString("id");
+                o[1] = rss.getString("judul"); //menampung data pada judul
+                o[2] = rss.getString("penulis"); //menampung data pada penulis
+                o[3] = rss.getString("harga"); //menampung data pada harga
+                model.addRow(o); //menambah baris
+            }
+        }catch(SQLException e){
             System.out.println(e.getMessage());
         }
     }
@@ -84,6 +128,8 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -119,6 +165,19 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         ));
         jScrollPane1.setViewportView(jTable2);
 
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable3);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -127,9 +186,9 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(255, 153, 102));
+        jPanel1.setBackground(new java.awt.Color(102, 102, 255));
 
-        jLabel1.setFont(new java.awt.Font("Felix Titling", 1, 22)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Felix Titling", 1, 24)); // NOI18N
         jLabel1.setText("Form Data Buku");
 
         jPanel4.setBackground(new java.awt.Color(0, 0, 0));
@@ -138,7 +197,7 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 242, Short.MAX_VALUE)
+            .addGap(0, 254, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,7 +210,7 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 243, Short.MAX_VALUE)
+            .addGap(0, 248, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,11 +225,11 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(145, 145, 145)
-                        .addComponent(jLabel1)))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(162, 162, 162)
+                .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -178,14 +237,14 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1)
+                .addGap(13, 13, 13)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
-        jPanel2.setBackground(new java.awt.Color(255, 153, 102));
+        jPanel2.setBackground(new java.awt.Color(102, 102, 255));
 
         jLabel2.setFont(new java.awt.Font("Bookman Old Style", 0, 16)); // NOI18N
         jLabel2.setText("Judul");
@@ -313,7 +372,7 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
                         .addComponent(JBHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(JBKeluar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -351,18 +410,13 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -381,78 +435,116 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
         // TODO add your handling code here:
         String judul = TFJudul.getText(); //memberi aturan text sehingga menginput text
         String penulis = CBPen.getSelectedItem().toString(); //memberi aturan selected item sehingga bisa memilih penulis
-        String harga = TFHarga.getText(); //memberi aturan text sehingga menginput text
+        String harga = TFHarga.getText();//memberi aturan text sehingga menginput text
+        if(validasi(judul,penulis)){
+            JOptionPane.showMessageDialog(null, "Data Sudah ada"); //menampilkan konfirmasi sesuai statement yang diberikan, jika data yang akan disimpan telah ada di database maka akan muncul statement di samping
+        }                                                          //null tidak merujuk ke data manapun
+        else{
         TambahData(judul,penulis,harga); //data akan terinput pada method tambah data
+        InitTable();TampilData();
+        JOptionPane.showMessageDialog(null, "Berhasil Simpan Data"); //menampilkan konfirmasi sesuai statement yang diberikan
     }//GEN-LAST:event_JBSimpanActionPerformed
-
+    }
     private void JBKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBKeluarActionPerformed
         // TODO add your handling code here:
-        System.exit(0);
+        System.exit(0); //
     }//GEN-LAST:event_JBKeluarActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here
         int baris = jTable1.getSelectedRow();
-        String judul = jTable1.getValueAt(baris,0).toString();
-        String penulis = jTable1.getValueAt(baris,1).toString();
-        String harga = jTable1.getValueAt(baris,2).toString();
-        TFJudul.setText(judul);
-        CBPen.setSelectedItem(penulis);
-        TFHarga.setText(harga);
+        TFJudul.setText(jTable1.getValueAt(baris, 1).toString());
+        CBPen.setSelectedItem(jTable1.getValueAt(baris, 2).toString());
+        TFHarga.setText(jTable1.getValueAt(baris, 3).toString());
+//        String judul = jTable1.getValueAt(baris,0).toString();
+//        String penulis = jTable1.getValueAt(baris,1).toString();
+//        String harga = jTable1.getValueAt(baris,2).toString();
+//        TFJudul.setText(judul);
+//        CBPen.setSelectedItem(penulis);
+//        TFHarga.setText(harga);
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void JBHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBHapusActionPerformed
         // TODO add your handling code here:
-        try {
-        int pilih = JOptionPane.showConfirmDialog(this, "Yakin Ingin Menghapus?", "Konfirmasi Hapus", JOptionPane.YES_OPTION); //
-        if(pilih==JOptionPane.YES_OPTION){
         int baris = jTable1.getSelectedRow();
-        model.removeRow(baris);}
-        } 
-        catch (Exception e){
-                JOptionPane.showMessageDialog(this,"Pilih Data yang ingin di hapus"); 
-                }
+        String id = jTable1.getValueAt(baris, 0).toString();
+        if(hapusdata(id))
+            JOptionPane.showMessageDialog(null, "Berhasil Hapus Data"); //menampilkan konfirmasi sesuai statement yang diberikan
+        else
+            JOptionPane.showMessageDialog(null, "Gagal Hapus Data"); //jika data yang ingin dihapus belum dipilih maka akan muncul tampilan gagal hapus data
+        InitTable();TampilData();
+//        try {
+//        int pilih = JOptionPane.showConfirmDialog(this, "Yakin Ingin Menghapus?", "Konfirmasi Hapus", JOptionPane.YES_OPTION); //
+//        if(pilih==JOptionPane.YES_OPTION){
+//        int baris = jTable1.getSelectedRow();
+//        model.removeRow(baris);}
+//        } 
+//        catch (Exception e){
+//                JOptionPane.showMessageDialog(this,"Pilih Data yang ingin di hapus"); 
+//                }
     }//GEN-LAST:event_JBHapusActionPerformed
 
     private void JBUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBUbahActionPerformed
         // TODO add your handling code here:
-        try{
-            int baris = jTable1.getSelectedRow();
-            jTable1.setValueAt(TFJudul.getText(), baris, 0);
-            jTable1.setValueAt(CBPen.getSelectedItem(), baris, 1);
-            jTable1.setValueAt(TFHarga.getText(), baris, 2);
-        }
-        catch (Exception e) {
-        }
+        int baris = jTable1.getSelectedRow();
+         String id = jTable1.getValueAt(baris, 0).toString();
+         String judul = TFJudul.getText();
+         String penulis = CBPen.getSelectedItem().toString();
+         String harga = TFHarga.getText();
+         if(validasi(judul,penulis)){
+              JOptionPane.showMessageDialog(null, "Data Sudah ada");} //mengkonfirmasi sesuai statement yang diberikan
+         else{
+              ubahdata(id, judul, penulis, harga);
+              InitTable();TampilData();
+              JOptionPane.showMessageDialog(null, "Berhasil Ubah Data");} //mengkonfirmasi sesuai statement yang diberikan
+         
+         
+//            JOptionPane.showMessageDialog(null, "Gagal Ubah Data");
             
+         
+//        try{
+//            int baris = jTable1.getSelectedRow();
+//            jTable1.setValueAt(TFJudul.getText(), baris, 0);
+//            jTable1.setValueAt(CBPen.getSelectedItem(), baris, 1);
+//            jTable1.setValueAt(TFHarga.getText(), baris, 2);
+//        }
+//        catch (Exception e) {
+//        }
+//            
     }//GEN-LAST:event_JBUbahActionPerformed
 
     private void TFCariCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_TFCariCaretUpdate
         // TODO add your handling code here:
-        model.getDataVector().removeAllElements();
-        model.fireTableDataChanged();
-        String search = CBCari.getSelectedItem().toString();
-        if (TFCari.getText().length()>0){
-        try {
-            String sql = "select *from buku where "+search+" like '%"+TFCari.getText()+"%'";
-            stt = con. createStatement();
-            rss = stt.executeQuery(sql);
-            ResultSet rss=stt.executeQuery(sql);
-            while (rss.next()){
-                Object[] o=new Object [3];
-                o[0]=rss.getString("judul");
-                o[1]=rss.getString("penulis");
-                o[2]=rss.getString("harga");
-                model.addRow(o);
-            }
-            stt.close();
-            rss.close();
+        InitTable();
+        if(TFCari.getText().length()==0){ //jika data yang akan dicari ada, maka akan menyeleksi else
+            TampilData();
+        }else{
+            PencarianData(CBCari.getSelectedItem().toString(),TFCari.getText()); //mencari data pada method PencarianData 
         }
-        catch(SQLException e){
-            System.out.println("Ada Kesalahan");
-        }
-    }
- 
+//        model.getDataVector().removeAllElements();
+//        model.fireTableDataChanged();
+//        String search = CBCari.getSelectedItem().toString();
+//        if (TFCari.getText().length()>0){
+//        try {
+//            String sql = "select *from buku where "+search+" like '%"+TFCari.getText()+"%'";
+//            stt = con. createStatement();
+//            rss = stt.executeQuery(sql);
+//            ResultSet rss=stt.executeQuery(sql);
+//            while (rss.next()){
+//                Object[] o=new Object [3];
+//                o[0]=rss.getString("judul");
+//                o[1]=rss.getString("penulis");
+//                o[2]=rss.getString("harga");
+//                model.addRow(o);
+//            }
+//            stt.close();
+//            rss.close();
+//        }
+//        catch(SQLException e){
+//            System.out.println("Ada Kesalahan");
+//        }
+//    }
+// 
     }//GEN-LAST:event_TFCariCaretUpdate
 
     private void TFCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFCariActionPerformed
@@ -485,6 +577,9 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
             java.util.logging.Logger.getLogger(FormDataBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -516,7 +611,9 @@ public class FormDataBuku extends javax.swing.JFrame { //class formdatabuku yang
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
     // End of variables declaration//GEN-END:variables
 }
